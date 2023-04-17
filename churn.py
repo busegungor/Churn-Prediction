@@ -53,6 +53,8 @@ def general_picture(dataframe):
     print(dataframe.shape)
     print("Variables".center(70, "~"))
     print(dataframe.columns)
+    print("Types".center(70, "~"))
+    print(dataframe.dtypes)
     print("NA".center(70, "~"))
     print(dataframe.isnull().sum())
     print("Head".center(70, "~"))
@@ -61,6 +63,8 @@ def general_picture(dataframe):
     print(dataframe.describe().T)
 general_picture(df)
 
+# Adım 2: Gerekli düzenlemeleri yapınız. (Tip hatası olan değişkenler gibi)
+df["TotalCharges"] = pd.to_numeric(df['TotalCharges'], errors='coerce')
 # Adım 1: Numerik ve kategorik değişkenleri yakalayınız.
 def grab_col_names(dataframe, cat_th=10, car_th=20):
     cat_cols = [col for col in dataframe.columns if dataframe[col].dtypes == "O"]
@@ -79,8 +83,37 @@ def grab_col_names(dataframe, cat_th=10, car_th=20):
     print(f"num_but_car: {len(num_but_cats)}")
     return cat_cols, num_cols, cat_but_car
 cat_cols, num_cols, cat_but_car = grab_col_names(df)
-# Adım 2: Gerekli düzenlemeleri yapınız. (Tip hatası olan değişkenler gibi)
 # Adım 3: Numerik ve kategorik değişkenlerin veri içindeki dağılımını gözlemleyiniz.
+def category_summary(dataframe, col_name, plot=False):
+    print(pd.DataFrame({col_name: dataframe[col_name].value_counts(),
+                        "Ratio": 100 * dataframe[col_name].value_counts() / len(dataframe)}))
+    print("###########################")
+    print(f"{col_name} : {dataframe[col_name].unique()}")
+    print("###########################")
+    if plot:
+        sns.countplot(x=dataframe[col_name], data=dataframe)
+        plt.xticks(rotation=90)
+        plt.figure(figsize=(14, 14))
+        plt.show(block=True)
+
+for col in cat_cols:
+    if df[col].dtypes == "bool":
+        df[col] = df[col].astype(int)
+        category_summary(df, col, plot=True)
+    else:
+        category_summary(df, col, plot=True)
+
+def number_summary(dataframe, numberical_col, plot=False):
+    quantiles = [0, 0.05, 0.95, 0.99, 1]
+    print(dataframe[numberical_col].describe(quantiles).T)
+    if plot:
+        dataframe[numberical_col].hist(bins=15,ec='white')
+        plt.xlabel(numberical_col)
+        plt.title(f"Frequency of {numberical_col}")
+        plt.show(block=True)
+
+for col in num_cols:
+    number_summary(df, col, plot=True)
 # Adım 4: Kategorik değişkenler ile hedef değişken incelemesini yapınız.
 # Adım 5: Aykırı gözlem var mı inceleyiniz.
 # Adım 6: Eksik gözlem var mı inceleyiniz.

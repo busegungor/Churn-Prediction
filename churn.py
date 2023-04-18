@@ -350,31 +350,31 @@ cart_best_grid = GridSearchCV(cart_model,
                               cv=5,
                               n_jobs=-1,
                               verbose=True).fit(X, y)
-cart_best_grid.best_params_ #
-cart_best_grid.best_score_ #
+cart_best_grid.best_params_ # {'max_depth': 4, 'min_samples_split': 2}
+cart_best_grid.best_score_ # 0.7895320188328829
 cart_final = cart_model.set_params(**cart_best_grid.best_params_).fit(X, y)
 cv_results = cross_validate(cart_final,
                             X, y,
                             cv=5,
                             scoring=["accuracy", "f1", "roc_auc"])
 
-cv_results['test_accuracy'].mean() #
-cv_results['test_f1'].mean() #
-cv_results['test_roc_auc'].mean() #
+cv_results['test_accuracy'].mean() # 0.8019029645674383
+cv_results['test_f1'].mean() # 0.5665132582522484
+cv_results['test_roc_auc'].mean() # 0.8415294027687767
 
 # Random Forests
 rf_model.get_params()
 rf_params = {"max_depth": [5, 8, None],
-             "max_features": [3, 5, 7, "auto"],
+             "max_features": [3, 5, 7],
              "min_samples_split": [2, 5, 8, 15, 20],
              "n_estimators": [100, 200, 500]}
 rf_best_grid = GridSearchCV(rf_model, rf_params, cv=5, n_jobs=-1, verbose=True).fit(X, y)
 rf_best_grid.best_params_
 rf_final = rf_model.set_params(**rf_best_grid.best_params_, random_state=17).fit(X, y)
 cv_results = cross_validate(rf_final, X, y, cv=10, scoring=["accuracy", "f1", "roc_auc"])
-cv_results['test_accuracy'].mean() #
-cv_results['test_f1'].mean() #
-cv_results['test_roc_auc'].mean() #
+cv_results['test_accuracy'].mean() # 0.8019029645674383
+cv_results['test_f1'].mean() # 0.5665132582522484
+cv_results['test_roc_auc'].mean() # 0.8415294027687767
 
 # Gradient Boosting
 
@@ -389,9 +389,9 @@ gbm_best_grid.best_params_
 gbm_final = gbm_model.set_params(**gbm_best_grid.best_params_, random_state=17, ).fit(X, y)
 
 cv_results = cross_validate(gbm_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
-cv_results['test_accuracy'].mean() #
-cv_results['test_f1'].mean() #
-cv_results['test_roc_auc'].mean() #
+cv_results['test_accuracy'].mean() # 0.8047475485810128
+cv_results['test_f1'].mean() # 0.5822396113643287
+cv_results['test_roc_auc'].mean() # 0.8480174110014126
 
 # XGBoosting
 xgboost_model.get_params()
@@ -405,9 +405,9 @@ xgboost_best_grid = GridSearchCV(xgboost_model, xgboost_params, cv=5, n_jobs=-1,
 xgboost_final = xgboost_model.set_params(**xgboost_best_grid.best_params_, random_state=17).fit(X, y)
 
 cv_results = cross_validate(xgboost_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
-cv_results['test_accuracy'].mean() #
-cv_results['test_f1'].mean() #
-cv_results['test_roc_auc'].mean() #
+cv_results['test_accuracy'].mean() # 0.8030410839523174
+cv_results['test_f1'].mean() # 0.5817849473292002
+cv_results['test_roc_auc'].mean() # 0.846151147485461
 
 # CatBoost
 catboost_model.get_params()
@@ -420,21 +420,21 @@ catboost_best_grid = GridSearchCV(catboost_model, catboost_params, cv=5, n_jobs=
 catboost_final = catboost_model.set_params(**catboost_best_grid.best_params_, random_state=17).fit(X, y)
 cv_results = cross_validate(catboost_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
 
-cv_results['test_accuracy'].mean() #
-cv_results['test_f1'].mean() #
-cv_results['test_roc_auc'].mean() #
+cv_results['test_accuracy'].mean() # 0.8065966651198387
+cv_results['test_f1'].mean() # 0.5863726308905161
+cv_results['test_roc_auc'].mean() # 0.8476931586508286
 
 # KNN
 knn_model.get_params()
-knn_params = {}
+knn_params = {'n_neighbors' : [5,7,9,11,13,15]}
 
-knn_best_grid = GridSearchCV(catboost_model, knn_params, cv=5, n_jobs=-1, verbose=True).fit(X, y)
-knn_final = knn_model.set_params(**knn_best_grid.best_params_, random_state=17).fit(X, y)
+knn_best_grid = GridSearchCV(knn_model, knn_params, cv=5, n_jobs=-1, verbose=True).fit(X, y)
+knn_final = knn_model.set_params(**knn_best_grid.best_params_).fit(X, y)
 cv_results = cross_validate(knn_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
 
-cv_results['test_accuracy'].mean() #
-cv_results['test_f1'].mean() #
-cv_results['test_roc_auc'].mean() #
+cv_results['test_accuracy'].mean() # 0.7881097459259282
+cv_results['test_f1'].mean() # 0.5742947132837379
+cv_results['test_roc_auc'].mean() # 0.8221599433028836
 
 ################################################
 # Feature Importance
@@ -456,4 +456,4 @@ plot_importance(rf_final, X)
 plot_importance(gbm_final, X)
 plot_importance(xgboost_final, X)
 plot_importance(catboost_final, X)
-plot_importance(knn_final, X)
+# plot_importance(knn_final, X)

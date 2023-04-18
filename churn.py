@@ -229,14 +229,56 @@ df.loc[(df["tenure"] > 9) & (df["tenure"] <= 29), "belonging"] = "normal"
 df.loc[(df["tenure"] > 29) & (df["tenure"] <= 55), "belonging"] = "high"
 df.loc[(df["tenure"] > 55) & (df["tenure"] <= 72), "belonging"] = "abnormal"
 
+
 cat_cols, num_cols, cat_but_car = grab_col_names(df)
 for col in num_cols:
     print(col, check_outlier(df, col))
 
 df.columns = [col.lower() for col in df.columns]
+df = df.drop("customerid", axis=1)
 # Adım 3: Encoding işlemlerini gerçekleştiriniz.
-# Adım 4: Numerik değişkenler için standartlaştırma yapınız.
 
+# def rare_analyser(dataframe, target, cat_cols):
+#     for col in cat_cols:
+#         print(col, ":", len(dataframe[col].value_counts()))
+#         print(pd.DataFrame({"COUNT": dataframe[col].value_counts(),
+#                             "RATIO": dataframe[col].value_counts() / len(dataframe),
+#                             "TARGET_MEAN": dataframe.groupby(col)[target].mean()}), end="\n\n\n")
+#
+# rare_analyser(df, "churn", cat_cols)
+#
+# def rare_encoder(dataframe, rare_perc):
+#     temp_df = dataframe.copy() # dataframe'in kopyası oluşturuldu.
+#
+#     rare_columns = [col for col in temp_df.columns if temp_df[col].dtypes == "O" and (temp_df[col].value_counts() / len(temp_df) < rare_perc).any(axis=None)]
+#     # rare değere sahip değişkenler seçildi.
+#
+#     for var in rare_columns:
+#         # rare değişkenlerde gez.
+#         tmp = temp_df[var].value_counts() / len(temp_df) # tem_df dataframe'i içerisinden ilgili değişkeni seçiyoruz. value_counts'ları alarak gözlem sayısına bölüyoruz. tmp adında yeni bir dataframe oluşturuyoruz.
+#         rare_labels = tmp[tmp < rare_perc].index # bu dataframe de belirlediğimiz rare_perc oranının altında olan değerlerin index'ini rare_labels'a ata.
+#         temp_df[var] = np.where(temp_df[var].isin(rare_labels), "Rare", temp_df[var]) # ana dataframe'de bu rare_labels varsa(isin) olduğu yere (where) "Rare" ata yoksa aynen bırak.
+#
+#     return temp_df
+#
+# df = rare_encoder(df, 0.01)
+# rare_analyser(df, "churn", cat_cols)
+
+feautes_ohe = ["multiplelines", "internetservice", "onlinesecurity", "onlinebackup", "deviceprotection", "techsupport", "streamingtv", "streamingmovies", "contract", "paymentmethod", "servicediff", "belonging"]
+df = pd.get_dummies(df, columns=feautes_ohe, drop_first=True, dtype=int)
+
+def label_encoder(dataframe, binary_col):
+    le = LabelEncoder()
+    dataframe[binary_col] = le.fit_transform(dataframe[binary_col])
+    return dataframe
+
+binary_cols = [col for col in df.columns if df[col].dtypes == "O" and df[col].nunique() == 2]
+
+for col in binary_cols:
+    df = label_encoder(df, col)
+# Adım 4: Numerik değişkenler için standartlaştırma yapınız.
+scaler = StandardScaler()
+df[num_cols] = scaler.fit_transform(df[num_cols])
 ###################################
 # Görev 3 : Modelleme
 ###################################

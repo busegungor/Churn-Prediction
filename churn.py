@@ -23,7 +23,7 @@ import seaborn as sns
 import missingno as msno
 from datetime import date
 from sklearn.metrics import accuracy_score
-from sklearn.neighbors import LocalOutlierFactor
+from sklearn.neighbors import LocalOutlierFactor, KNeighborsClassifier
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder, StandardScaler, RobustScaler
 from matplotlib import pyplot as plt
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
@@ -284,5 +284,57 @@ df[num_cols] = scaler.fit_transform(df[num_cols])
 ###################################
 
 # Adım 1: Sınıflandırma algoritmaları ile modeller kurup, accuracy skorlarını inceleyip. En iyi 4 modeli seçiniz.
+y = df["churn"]
+X = df.drop(["churn"], axis=1)
+
+# DecisionTreeClassifier
+cart_model = DecisionTreeClassifier(random_state=17).fit(X, y)
+cv_results = cross_validate(cart_model,
+                            X, y,
+                            cv=5,
+                            scoring=["accuracy", "f1", "roc_auc"])
+
+cv_results['test_accuracy'].mean() # 0.7249695436655375
+cv_results['test_f1'].mean() # 0.48455935844045184
+cv_results['test_roc_auc'].mean() # 0.6499370404148909
+
+# Random Forests
+rf_model = RandomForestClassifier(random_state=17)
+cv_results = cross_validate(rf_model, X, y, cv=10, scoring=["accuracy", "f1", "roc_auc"])
+
+cv_results['test_accuracy'].mean() # 0.7955040492047072
+cv_results['test_f1'].mean() # 0.5612686565575962
+cv_results['test_roc_auc'].mean() # 0.8247991954338982
+
+# Gradient Boosting
+gbm_model = GradientBoostingClassifier(random_state=17)
+cv_results = cross_validate(gbm_model, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
+
+cv_results['test_accuracy'].mean() # 0.8043218170476616
+cv_results['test_f1'].mean() # 0.5887966518084475
+cv_results['test_roc_auc'].mean() # 0.8461925418042912
+
+# XGBoosting
+xgboost_model = XGBClassifier(random_state=17, use_label_encoder=False)
+cv_results = cross_validate(xgboost_model, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
+
+cv_results['test_accuracy'].mean() # 0.7848392663789364
+cv_results['test_f1'].mean() # 0.5573400495841351
+cv_results['test_roc_auc'].mean() # 0.8246719854029324
+
+# CatBoost
+catboost_model = CatBoostClassifier(random_state=17, verbose=False)
+cv_results = cross_validate(catboost_model, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
+
+cv_results['test_accuracy'].mean() # 0.7984910845083666
+cv_results['test_f1'].mean() # 0.5754884820646834
+cv_results['test_roc_auc'].mean() # 0.8406078716924945
+
+# KNN
+knn_model = KNeighborsClassifier().fit(X, y)
+cross_validation = cross_validate(knn_model, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
+cv_results['test_accuracy'].mean() # 0.7984910845083666
+cross_validation["test_f1"].mean() # 0.5602917238894243
+cross_validation["test_roc_auc"].mean() # 0.7832027939881637
 # Adım 2: Seçtiğiniz modeller ile hiperparametre optimizasyonu gerçekleştirin ve
 # bulduğunuz hiparparametreler ile modeli tekrar kurunuz.

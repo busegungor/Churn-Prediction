@@ -134,6 +134,57 @@ def target_summary_with_num(dataframe, target, numerical_col):
 
 for col in num_cols:
     target_summary_with_num(df, "Churn", col)
+
+plots = {1: [111], 2: [121, 122], 3: [131, 132, 133], 4: [221, 222, 223, 224], 5: [231, 232, 233, 234, 235], 6: [231, 232, 233, 234, 235, 236]}
+def boxplot(x, y, df):
+    rows = int(str(plots[len(y)][0])[0])
+    columns = int(str(plots[len(y)][0])[1])
+    plt.figure(figsize=(7*columns, 7*rows))
+
+    for i, j in enumerate(y):
+        plt.subplot(plots[len(y)][i])
+        ax = sns.boxplot(x=x, y=j, data=df[[x, j]], palette="Blues", linewidth=1)
+        ax.set_title(j)
+    return plt.show()
+boxplot("Churn", ["tenure", "MonthlyCharges", "TotalCharges"], df)
+
+plt.style.use("fivethirtyeight")
+def countplot(x, y, df):
+    rows = int(str(plots[len(y)][0])[0])
+    columns = int(str(plots[len(y)][0])[1])
+    plt.figure(figsize=(7 * columns, 7 * rows))
+
+    for i, j in enumerate(y):
+        plt.subplot(plots[len(y)][i])
+        ax = sns.countplot(x=j, hue=x, data=df, palette="Blues", linewidth=1, edgecolor="black")
+        ax.set_title(j)
+    return plt.show()
+countplot("Churn", [ "InternetService", "OnlineSecurity", "OnlineBackup", "DeviceProtection", "TechSupport", "MultipleLines"], df)
+
+def countplot(x, y, df):
+    rows = int(str(plots[len(y)][0])[0])
+    columns = int(str(plots[len(y)][0])[1])
+    plt.figure(figsize=(7 * columns, 7 * rows))
+
+    for i, j in enumerate(y):
+        plt.subplot(plots[len(y)][i])
+        ax = sns.countplot(x=j, hue=x, data=df, palette="Blues", linewidth=1, edgecolor="black")
+        ax.set_title(j)
+    return plt.show()
+countplot("Churn", [ "Contract", "PaperlessBilling", "PaymentMethod"], df)
+
+def countplot(x, y, df):
+    rows = int(str(plots[len(y)][0])[0])
+    columns = int(str(plots[len(y)][0])[1])
+    plt.figure(figsize=(7 * columns, 7 * rows))
+
+    for i, j in enumerate(y):
+        plt.subplot(plots[len(y)][i])
+        ax = sns.countplot(x=j, hue=x, data=df, palette="Blues", linewidth=1, edgecolor="black")
+        ax.set_title(j)
+    return plt.show()
+countplot("Churn", ["Partner", "SeniorCitizen", "Dependents"], df)
+
 # Adım 5: Aykırı gözlem var mı inceleyiniz.
 def outlier_thresholds(dataframe, col_name, q1=0.05, q3=0.95):
     # catch outliers

@@ -336,5 +336,104 @@ cross_validation = cross_validate(knn_model, X, y, cv=5, scoring=["accuracy", "f
 cv_results['test_accuracy'].mean() # 0.7984910845083666
 cross_validation["test_f1"].mean() # 0.5602917238894243
 cross_validation["test_roc_auc"].mean() # 0.7832027939881637
+
 # Adım 2: Seçtiğiniz modeller ile hiperparametre optimizasyonu gerçekleştirin ve
 # bulduğunuz hiparparametreler ile modeli tekrar kurunuz.
+
+# DecisionTreeClassifier
+cart_model.get_params()
+cart_params = {"max_depth": range(1, 11),
+               "min_samples_split": range(2, 20)}
+
+cart_best_grid = GridSearchCV(cart_model,
+                              cart_params,
+                              cv=5,
+                              n_jobs=-1,
+                              verbose=True).fit(X, y)
+cart_best_grid.best_params_ # {'max_depth': 4, 'min_samples_split': 2}
+
+cart_best_grid.best_score_ # 0.7895320188328829
+cart_final = cart_model.set_params(**cart_best_grid.best_params_).fit(X, y)
+
+cv_results = cross_validate(cart_final,
+                            X, y,
+                            cv=5,
+                            scoring=["accuracy", "f1", "roc_auc"])
+
+cv_results['test_accuracy'].mean() # 0.7895320188328829
+cv_results['test_f1'].mean() # 0.5454769038575741
+cv_results['test_roc_auc'].mean() # 0.8211855757682003
+
+# Random Forests
+rf_model.get_params()
+rf_params = {"max_depth": [5, 8, None],
+             "max_features": [3, 5, 7, "auto"],
+             "min_samples_split": [2, 5, 8, 15, 20],
+             "n_estimators": [100, 200, 500]}
+rf_best_grid = GridSearchCV(rf_model, rf_params, cv=5, n_jobs=-1, verbose=True).fit(X, y)
+rf_best_grid.best_params_
+rf_final = rf_model.set_params(**rf_best_grid.best_params_, random_state=17).fit(X, y)
+cv_results = cross_validate(rf_final, X, y, cv=10, scoring=["accuracy", "f1", "roc_auc"])
+cv_results['test_accuracy'].mean()
+cv_results['test_f1'].mean()
+cv_results['test_roc_auc'].mean()
+
+# Gradient Boosting
+
+gbm_model.get_params()
+gbm_params = {"learning_rate": [0.01, 0.1],
+              "max_depth": [3, 8, 10],
+              "n_estimators": [100, 500, 1000],
+              "subsample": [1, 0.5, 0.7]}
+
+gbm_best_grid = GridSearchCV(gbm_model, gbm_params, cv=5, n_jobs=-1, verbose=True).fit(X, y)
+gbm_best_grid.best_params_
+gbm_final = gbm_model.set_params(**gbm_best_grid.best_params_, random_state=17, ).fit(X, y)
+
+cv_results = cross_validate(gbm_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
+cv_results['test_accuracy'].mean()
+cv_results['test_f1'].mean()
+cv_results['test_roc_auc'].mean()
+
+# XGBoosting
+xgboost_model.get_params()
+xgboost_params = {"learning_rate": [0.1, 0.01],
+                  "max_depth": [5, 8],
+                  "n_estimators": [100, 500, 1000],
+                  "colsample_bytree": [0.7, 1]}
+
+xgboost_best_grid = GridSearchCV(xgboost_model, xgboost_params, cv=5, n_jobs=-1, verbose=True).fit(X, y)
+
+xgboost_final = xgboost_model.set_params(**xgboost_best_grid.best_params_, random_state=17).fit(X, y)
+
+cv_results = cross_validate(xgboost_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
+cv_results['test_accuracy'].mean()
+cv_results['test_f1'].mean()
+cv_results['test_roc_auc'].mean()
+
+# CatBoost
+catboost_model.get_params()
+catboost_params = {"iterations": [200, 500],
+                   "learning_rate": [0.01, 0.1],
+                   "depth": [3, 6]}
+
+
+catboost_best_grid = GridSearchCV(catboost_model, catboost_params, cv=5, n_jobs=-1, verbose=True).fit(X, y)
+catboost_final = catboost_model.set_params(**catboost_best_grid.best_params_, random_state=17).fit(X, y)
+cv_results = cross_validate(catboost_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
+
+cv_results['test_accuracy'].mean()
+cv_results['test_f1'].mean()
+cv_results['test_roc_auc'].mean()
+
+# KNN
+knn_model.get_params()
+knn_params = {}
+
+knn_best_grid = GridSearchCV(catboost_model, knn_params, cv=5, n_jobs=-1, verbose=True).fit(X, y)
+knn_final = knn_model.set_params(**knn_best_grid.best_params_, random_state=17).fit(X, y)
+cv_results = cross_validate(knn_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
+
+cv_results['test_accuracy'].mean()
+cv_results['test_f1'].mean()
+cv_results['test_roc_auc'].mean()

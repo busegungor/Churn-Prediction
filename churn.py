@@ -350,19 +350,17 @@ cart_best_grid = GridSearchCV(cart_model,
                               cv=5,
                               n_jobs=-1,
                               verbose=True).fit(X, y)
-cart_best_grid.best_params_ # {'max_depth': 4, 'min_samples_split': 2}
-
-cart_best_grid.best_score_ # 0.7895320188328829
+cart_best_grid.best_params_ #
+cart_best_grid.best_score_ #
 cart_final = cart_model.set_params(**cart_best_grid.best_params_).fit(X, y)
-
 cv_results = cross_validate(cart_final,
                             X, y,
                             cv=5,
                             scoring=["accuracy", "f1", "roc_auc"])
 
-cv_results['test_accuracy'].mean() # 0.7895320188328829
-cv_results['test_f1'].mean() # 0.5454769038575741
-cv_results['test_roc_auc'].mean() # 0.8211855757682003
+cv_results['test_accuracy'].mean() #
+cv_results['test_f1'].mean() #
+cv_results['test_roc_auc'].mean() #
 
 # Random Forests
 rf_model.get_params()
@@ -374,9 +372,9 @@ rf_best_grid = GridSearchCV(rf_model, rf_params, cv=5, n_jobs=-1, verbose=True).
 rf_best_grid.best_params_
 rf_final = rf_model.set_params(**rf_best_grid.best_params_, random_state=17).fit(X, y)
 cv_results = cross_validate(rf_final, X, y, cv=10, scoring=["accuracy", "f1", "roc_auc"])
-cv_results['test_accuracy'].mean()
-cv_results['test_f1'].mean()
-cv_results['test_roc_auc'].mean()
+cv_results['test_accuracy'].mean() #
+cv_results['test_f1'].mean() #
+cv_results['test_roc_auc'].mean() #
 
 # Gradient Boosting
 
@@ -391,9 +389,9 @@ gbm_best_grid.best_params_
 gbm_final = gbm_model.set_params(**gbm_best_grid.best_params_, random_state=17, ).fit(X, y)
 
 cv_results = cross_validate(gbm_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
-cv_results['test_accuracy'].mean()
-cv_results['test_f1'].mean()
-cv_results['test_roc_auc'].mean()
+cv_results['test_accuracy'].mean() #
+cv_results['test_f1'].mean() #
+cv_results['test_roc_auc'].mean() #
 
 # XGBoosting
 xgboost_model.get_params()
@@ -407,9 +405,9 @@ xgboost_best_grid = GridSearchCV(xgboost_model, xgboost_params, cv=5, n_jobs=-1,
 xgboost_final = xgboost_model.set_params(**xgboost_best_grid.best_params_, random_state=17).fit(X, y)
 
 cv_results = cross_validate(xgboost_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
-cv_results['test_accuracy'].mean()
-cv_results['test_f1'].mean()
-cv_results['test_roc_auc'].mean()
+cv_results['test_accuracy'].mean() #
+cv_results['test_f1'].mean() #
+cv_results['test_roc_auc'].mean() #
 
 # CatBoost
 catboost_model.get_params()
@@ -422,9 +420,9 @@ catboost_best_grid = GridSearchCV(catboost_model, catboost_params, cv=5, n_jobs=
 catboost_final = catboost_model.set_params(**catboost_best_grid.best_params_, random_state=17).fit(X, y)
 cv_results = cross_validate(catboost_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
 
-cv_results['test_accuracy'].mean()
-cv_results['test_f1'].mean()
-cv_results['test_roc_auc'].mean()
+cv_results['test_accuracy'].mean() #
+cv_results['test_f1'].mean() #
+cv_results['test_roc_auc'].mean() #
 
 # KNN
 knn_model.get_params()
@@ -434,6 +432,28 @@ knn_best_grid = GridSearchCV(catboost_model, knn_params, cv=5, n_jobs=-1, verbos
 knn_final = knn_model.set_params(**knn_best_grid.best_params_, random_state=17).fit(X, y)
 cv_results = cross_validate(knn_final, X, y, cv=5, scoring=["accuracy", "f1", "roc_auc"])
 
-cv_results['test_accuracy'].mean()
-cv_results['test_f1'].mean()
-cv_results['test_roc_auc'].mean()
+cv_results['test_accuracy'].mean() #
+cv_results['test_f1'].mean() #
+cv_results['test_roc_auc'].mean() #
+
+################################################
+# Feature Importance
+################################################
+def plot_importance(model, features, num=len(X), save=False):
+    feature_imp = pd.DataFrame({'Value': model.feature_importances_, 'Feature': features.columns})
+    plt.figure(figsize=(10, 10))
+    sns.set(font_scale=1)
+    sns.barplot(x="Value", y="Feature", data=feature_imp.sort_values(by="Value",
+                                                                     ascending=False)[0:num])
+    plt.title('Features')
+    plt.tight_layout()
+    plt.show()
+    if save:
+        plt.savefig('importances.png')
+
+plot_importance(cart_final, X)
+plot_importance(rf_final, X)
+plot_importance(gbm_final, X)
+plot_importance(xgboost_final, X)
+plot_importance(catboost_final, X)
+plot_importance(knn_final, X)

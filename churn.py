@@ -159,7 +159,7 @@ def countplot(x, y, df):
         ax = sns.countplot(x=j, hue=x, data=df, palette="Blues", linewidth=1, edgecolor="black")
         ax.set_title(j)
     return plt.show()
-countplot("Churn", [ "InternetService", "OnlineSecurity", "OnlineBackup", "DeviceProtection", "TechSupport", "MultipleLines"], df)
+countplot("Churn", ["InternetService", "OnlineSecurity", "OnlineBackup", "DeviceProtection", "TechSupport", "MultipleLines"], df)
 
 def countplot(x, y, df):
     rows = int(str(plots[len(y)][0])[0])
@@ -171,7 +171,7 @@ def countplot(x, y, df):
         ax = sns.countplot(x=j, hue=x, data=df, palette="Blues", linewidth=1, edgecolor="black")
         ax.set_title(j)
     return plt.show()
-countplot("Churn", [ "Contract", "PaperlessBilling", "PaymentMethod"], df)
+countplot("Churn", ["Contract", "PaperlessBilling", "PaymentMethod"], df)
 
 def countplot(x, y, df):
     rows = int(str(plots[len(y)][0])[0])
@@ -216,7 +216,11 @@ df.isnull().sum() # TotalCharges        11
 df.dropna(inplace=True)
 # According to low limit and up limit, there are no values.
 # Adım 2: Yeni değişkenler oluşturunuz.
-
+df["Servicequality"] = (df[["InternetService", "OnlineSecurity", "OnlineBackup", "DeviceProtection", "TechSupport", "MultipleLines", "PhoneService", "StreamingTV", "StreamingMovies"]] == "Yes").sum(axis=1)
+df.loc[(df["Servicequality"] <= 1), "Servicediff"] = "less"
+df.loc[(df["Servicequality"] > 1) & (df["Servicequality"] <= 3), "Servicediff"] = "normal"
+df.loc[(df["Servicequality"] > 3) & (df["Servicequality"] <= 5), "Servicediff"] = "high"
+df.loc[(df["Servicequality"] > 5) & (df["Servicequality"] <= 8), "Servicediff"] = "abnormal"
 # Adım 3: Encoding işlemlerini gerçekleştiriniz.
 # Adım 4: Numerik değişkenler için standartlaştırma yapınız.
 

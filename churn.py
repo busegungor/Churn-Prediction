@@ -154,6 +154,7 @@ def check_outlier(dataframe, col_name):
 for col in num_cols:
     print(col, check_outlier(df, col))
 # Adım 6: Eksik gözlem var mı inceleyiniz.
+df.isnull().sum() # TotalCharges        11
 
 ###################################
 # Görev 2 : Feature Engineering

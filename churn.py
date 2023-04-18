@@ -221,6 +221,19 @@ df.loc[(df["Servicequality"] <= 1), "Servicediff"] = "less"
 df.loc[(df["Servicequality"] > 1) & (df["Servicequality"] <= 3), "Servicediff"] = "normal"
 df.loc[(df["Servicequality"] > 3) & (df["Servicequality"] <= 5), "Servicediff"] = "high"
 df.loc[(df["Servicequality"] > 5) & (df["Servicequality"] <= 8), "Servicediff"] = "abnormal"
+
+df["Charges"] = df["MonthlyCharges"] / df["TotalCharges"]*100
+
+df.loc[(df["tenure"] <= 9), "belonging"] = "less"
+df.loc[(df["tenure"] > 9) & (df["tenure"] <= 29), "belonging"] = "normal"
+df.loc[(df["tenure"] > 29) & (df["tenure"] <= 55), "belonging"] = "high"
+df.loc[(df["tenure"] > 55) & (df["tenure"] <= 72), "belonging"] = "abnormal"
+
+cat_cols, num_cols, cat_but_car = grab_col_names(df)
+for col in num_cols:
+    print(col, check_outlier(df, col))
+
+df.columns = [col.lower() for col in df.columns]
 # Adım 3: Encoding işlemlerini gerçekleştiriniz.
 # Adım 4: Numerik değişkenler için standartlaştırma yapınız.
 

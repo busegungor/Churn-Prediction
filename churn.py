@@ -161,7 +161,11 @@ df.isnull().sum() # TotalCharges        11
 ###################################
 
 # Adım 1: Eksik ve aykırı gözlemler için gerekli işlemleri yapınız.
+# There is a little missing values which are 11. Prefer to dropna.
+df.dropna(inplace=True)
+# According to low limit and up limit, there are no values.
 # Adım 2: Yeni değişkenler oluşturunuz.
+
 # Adım 3: Encoding işlemlerini gerçekleştiriniz.
 # Adım 4: Numerik değişkenler için standartlaştırma yapınız.
 

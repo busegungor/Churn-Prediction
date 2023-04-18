@@ -135,6 +135,24 @@ def target_summary_with_num(dataframe, target, numerical_col):
 for col in num_cols:
     target_summary_with_num(df, "Churn", col)
 # Adım 5: Aykırı gözlem var mı inceleyiniz.
+def outlier_thresholds(dataframe, col_name, q1=0.05, q3=0.95):
+    # catch outliers
+    q1 = dataframe[col_name].quantile(q1)
+    q3 = dataframe[col_name].quantile(q3)
+    interquartile_range = q3 - q1
+    up_limit = q3 + 1.5 * interquartile_range
+    low_limit = q1 - 1.5 * interquartile_range
+    return low_limit, up_limit
+def check_outlier(dataframe, col_name):
+    # kod akışı sırasında outlier var mı yok mu kontrol et varsa bir görev yapmak istediğimizde yoksa bir görev yapmak istediğimizde yön verir.
+    low_limit, up_limit = outlier_thresholds(dataframe, col_name)
+    if dataframe[(dataframe[col_name] < low_limit) | (dataframe[col_name] > up_limit)].any(axis=None):
+        return True
+    else:
+        return False
+
+for col in num_cols:
+    print(col, check_outlier(df, col))
 # Adım 6: Eksik gözlem var mı inceleyiniz.
 
 ###################################

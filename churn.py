@@ -65,6 +65,8 @@ general_picture(df)
 
 # Adım 2: Gerekli düzenlemeleri yapınız. (Tip hatası olan değişkenler gibi)
 df["TotalCharges"] = pd.to_numeric(df['TotalCharges'], errors='coerce')
+df["Churn"] = [0 if x == "No" else 1 for x in df["Churn"]]
+
 # Adım 1: Numerik ve kategorik değişkenleri yakalayınız.
 def grab_col_names(dataframe, cat_th=10, car_th=20):
     cat_cols = [col for col in dataframe.columns if dataframe[col].dtypes == "O"]
@@ -115,6 +117,23 @@ def number_summary(dataframe, numberical_col, plot=False):
 for col in num_cols:
     number_summary(df, col, plot=True)
 # Adım 4: Kategorik değişkenler ile hedef değişken incelemesini yapınız.
+def target_summary_with_cat(dataframe, target, categorical_col):
+    if target == categorical_col:
+        print("no")
+    else:
+        print(pd.DataFrame({"Target_Mean": dataframe.groupby(categorical_col)[target].mean()}))
+
+for col in cat_cols:
+    target_summary_with_cat(df, "Churn", col)
+
+def target_summary_with_num(dataframe, target, numerical_col):
+    if target == numerical_col:
+        print("no")
+    else:
+        print(pd.DataFrame({"Target_Mean": dataframe.groupby(numerical_col)[target].mean()}))
+
+for col in num_cols:
+    target_summary_with_num(df, "Churn", col)
 # Adım 5: Aykırı gözlem var mı inceleyiniz.
 # Adım 6: Eksik gözlem var mı inceleyiniz.
 
